@@ -19,6 +19,16 @@ export default function RewardsAffiliate() {
       >
         <Dashboard.AffiliatePage />
       </ReferralProvider>
+      <div className="oui-px-3 oui-py-6 lg:oui-px-6 oui-text-center oui-text-base-contrast-54 oui-text-sm">
+        Have questions? Contact us at{" "}
+        <a
+          href="mailto:contact@ainewscrypto.com"
+          className="oui-text-primary-light hover:oui-underline"
+        >
+          contact@ainewscrypto.com
+        </a>
+        .
+      </div>
     </>
   );
 }

@@ -1,15 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "@orderly.network/i18n";
-import { TradingPageProps } from "@orderly.network/trading";
-import {
-  BottomNavProps,
-  FooterProps,
-  MainNavWidgetProps,
-  MainNavItem as MainNavItemType,
-} from "@orderly.network/ui-scaffold";
 import { AppLogos } from "@orderly.network/react-app";
-import { OrderlyActiveIcon, OrderlyIcon } from "../components/icons/orderly";
-import { withBasePath } from "./base-path";
+import { TradingPageProps } from "@orderly.network/trading";
 import {
   PortfolioActiveIcon,
   PortfolioInactiveIcon,
@@ -24,13 +16,20 @@ import {
   cn,
 } from "@orderly.network/ui";
 import {
+  BottomNavProps,
+  FooterProps,
+  MainNavWidgetProps,
+  MainNavItem as MainNavItemType,
+} from "@orderly.network/ui-scaffold";
+import { CampaignsNavTitle } from "@/components/CampaignsNavTitle";
+import CustomLeftNav from "@/components/CustomLeftNav";
+import { OrderlyActiveIcon, OrderlyIcon } from "../components/icons/orderly";
+import { withBasePath } from "./base-path";
+import {
   getRuntimeConfig,
   getRuntimeConfigBoolean,
   getRuntimeConfigNumber,
 } from "./runtime-config";
-import { Link } from "react-router-dom";
-import CustomLeftNav from "@/components/CustomLeftNav";
-import { CampaignsNavTitle } from "@/components/CampaignsNavTitle";
 
 interface MainNavItem {
   name: string;
@@ -96,7 +95,7 @@ const getCustomMenuItems = (): MainNavItem[] => {
       if (!name || !href) {
         console.warn(
           "Invalid custom menu item format. Expected 'name,url':",
-          pair
+          pair,
         );
         continue;
       }
@@ -117,7 +116,7 @@ const getCustomMenuItems = (): MainNavItem[] => {
 
 const getEnabledMenus = (
   allMenuItems: MenuConfigItem[],
-  defaultEnabledMenus: MenuConfigItem[]
+  defaultEnabledMenus: MenuConfigItem[],
 ) => {
   const enabledMenusEnv = getRuntimeConfig("VITE_ENABLED_MENUS");
 
@@ -152,7 +151,7 @@ const getPnLBackgroundImages = (): string[] => {
 
   if (useCustomPnL) {
     const customPnLCount = getRuntimeConfigNumber(
-      "VITE_CUSTOM_PNL_POSTER_COUNT"
+      "VITE_CUSTOM_PNL_POSTER_COUNT",
     );
 
     if (isNaN(customPnLCount) || customPnLCount < 1) {
@@ -209,7 +208,7 @@ const getBottomNavIcon = (menuId: string) => {
 
 const getColorConfig = (): ColorConfigInterface | undefined => {
   const customColorConfigEnv = getRuntimeConfig(
-    "VITE_TRADING_VIEW_COLOR_CONFIG"
+    "VITE_TRADING_VIEW_COLOR_CONFIG",
   );
 
   if (
@@ -347,7 +346,7 @@ export const useOrderlyConfig = () => {
                 externalLinks={customMenus}
               />
             )}
-            <Link to="/">
+            <a href="https://ainewscrypto.com">
               {isMobile &&
               getRuntimeConfigBoolean("VITE_HAS_SECONDARY_LOGO") ? (
                 <img
@@ -358,7 +357,7 @@ export const useOrderlyConfig = () => {
               ) : (
                 components.title
               )}
-            </Link>
+            </a>
             {components.mainNav}
           </Flex>
 
@@ -422,7 +421,7 @@ export const useOrderlyConfig = () => {
       tradingPage: {
         tradingViewConfig: {
           scriptSRC: withBasePath(
-            "/tradingview/charting_library/charting_library.js"
+            "/tradingview/charting_library/charting_library.js",
           ),
           library_path: withBasePath("/tradingview/charting_library/"),
           customCssUrl: withBasePath("/tradingview/chart.css"),
