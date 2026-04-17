@@ -17,7 +17,7 @@ export default function RewardsAffiliate() {
             : "https://orderly.network"
         }
       >
-        <Dashboard.AffiliatePage />
+        <Dashboard.DashboardPage />
       </ReferralProvider>
       <div className="oui-px-3 oui-py-6 lg:oui-px-6 oui-text-center oui-text-base-contrast-54 oui-text-sm">
         Have questions? Contact us at{" "}
