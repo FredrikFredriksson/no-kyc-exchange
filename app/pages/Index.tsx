@@ -1,10 +1,10 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { DEFAULT_SYMBOL } from "@/utils/storage";
-import { getPageMeta } from "@/utils/seo";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getRuntimeConfig } from "@/utils/runtime-config";
+import { getPageMeta } from "@/utils/seo";
 import { renderSEOTags } from "@/utils/seo-tags";
+import { DEFAULT_SYMBOL } from "@/utils/storage";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function Index() {
 
   useEffect(() => {
     const searchParamsString = searchParams.toString();
-    const redirectPath = `/perp/${DEFAULT_SYMBOL}${searchParamsString ? `?${searchParamsString}` : ''}`;
+    const redirectPath = `/perp/${DEFAULT_SYMBOL}${searchParamsString ? `?${searchParamsString}` : ""}`;
     navigate(redirectPath);
   }, [navigate, searchParams]);
 
@@ -28,7 +28,7 @@ export default function Index() {
           <meta name="description" content={appDescription} />
         </Helmet>
       )}
+      <h1 className="sr-only">{appName || "AI News Crypto"}</h1>
     </>
   );
 }
-

@@ -8,6 +8,7 @@ export default function RewardsAffiliate() {
       <Helmet>
         <title>{generatePageTitle("Affiliate")}</title>
       </Helmet>
+      <h1 className="sr-only">Affiliate Rewards</h1>
       <ReferralProvider
         becomeAnAffiliateUrl="https://orderly.network"
         learnAffiliateUrl="https://orderly.network"
