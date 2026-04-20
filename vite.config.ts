@@ -1,10 +1,10 @@
-import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths";
-import { cjsInterop } from "vite-plugin-cjs-interop";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 import fs from "fs";
 import path from "path";
+import { defineConfig, Plugin } from "vite";
+import { cjsInterop } from "vite-plugin-cjs-interop";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 function loadConfigTitle(): string {
   try {
@@ -16,8 +16,8 @@ function loadConfigTitle(): string {
     const configText = fs.readFileSync(configPath, "utf-8");
     const jsonText = configText
       .replace(/window\.__RUNTIME_CONFIG__\s*=\s*/, "")
-      .replace(/;$/, "")
-      .trim();
+      .trim()
+      .replace(/;$/, "");
 
     const config = JSON.parse(jsonText);
     return config.VITE_ORDERLY_BROKER_NAME || "Orderly Network";

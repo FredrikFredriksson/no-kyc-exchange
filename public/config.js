@@ -28,7 +28,7 @@ window.__RUNTIME_CONFIG__ = {
   VITE_TWITTER_URL: "https://x.com/ainewscrypto",
   VITE_SEO_SITE_NAME: "AI News Crypto Exchange",
   VITE_SEO_SITE_DESCRIPTION: "No KYC crypto exchange for seamless trading",
-  VITE_SEO_SITE_URL: "https://dex.orderly.network/coin360-4166/",
+  VITE_SEO_SITE_URL: "https://trade.ainewscrypto.com",
   VITE_SEO_SITE_LANGUAGE: "en",
   VITE_SEO_SITE_LOCALE: "en_US",
   VITE_SEO_TWITTER_HANDLE: "@ainewscrypto",

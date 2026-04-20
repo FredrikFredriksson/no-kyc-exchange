@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import { readFileSync } from "fs";
 import fs from "fs/promises";
 import path from "path";
 
@@ -12,9 +13,42 @@ const STATIC_ROUTES = [
   "/portfolio/api-key",
   "/portfolio/setting",
   "/leaderboard",
+  "/rewards",
+  "/rewards/affiliate",
   "/swap",
   "/points",
 ];
+
+function loadBrokerName(): string {
+  try {
+    const configPath = path.join(__dirname, "public/config.js");
+    const configText = readFileSync(configPath, "utf-8");
+    const jsonText = configText
+      .replace(/window\.__RUNTIME_CONFIG__\s*=\s*/, "")
+      .trim()
+      .replace(/;$/, "");
+    const config = JSON.parse(jsonText);
+    return config.VITE_ORDERLY_BROKER_NAME || "Orderly Network";
+  } catch {
+    return "Orderly Network";
+  }
+}
+
+const ROUTE_TITLES: Record<string, string> = {
+  "/perp": "Trade",
+  "/markets": "Markets",
+  "/portfolio": "Portfolio",
+  "/portfolio/positions": "Positions",
+  "/portfolio/orders": "Orders",
+  "/portfolio/fee": "Fee",
+  "/portfolio/api-key": "API Key",
+  "/portfolio/setting": "Settings",
+  "/leaderboard": "Leaderboard",
+  "/rewards": "Rewards",
+  "/rewards/affiliate": "Affiliate Rewards",
+  "/swap": "Swap",
+  "/points": "Points",
+};
 
 interface SymbolInfo {
   symbol: string;
@@ -38,11 +72,20 @@ async function fetchSymbols(): Promise<string[]> {
   }
 }
 
-async function copyIndexToPath(indexPath: string, targetPath: string) {
+async function copyIndexToPath(
+  indexPath: string,
+  targetPath: string,
+  title?: string,
+) {
   try {
-    // Create parent directory if it doesn't exist
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
-    await fs.copyFile(indexPath, targetPath);
+    if (title) {
+      let html = await fs.readFile(indexPath, "utf-8");
+      html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+      await fs.writeFile(targetPath, html);
+    } else {
+      await fs.copyFile(indexPath, targetPath);
+    }
     console.log(`Created: ${targetPath}`);
   } catch (error) {
     console.error(`Error copying to ${targetPath}:`, error);
@@ -76,11 +119,14 @@ async function main() {
 
   const indexPath = path.join(buildDir, "index.html");
 
-  // Step 3: Create HTML files for static routes
-  console.log("\nCreating static route files...");
+  // Step 3: Create HTML files for static routes with unique titles
+  const brokerName = loadBrokerName();
+  console.log(`\nCreating static route files (broker: ${brokerName})...`);
   for (const route of STATIC_ROUTES) {
     const targetPath = path.join(buildDir, route, "index.html");
-    await copyIndexToPath(indexPath, targetPath);
+    const routeLabel = ROUTE_TITLES[route];
+    const pageTitle = routeLabel ? `${routeLabel} | ${brokerName}` : undefined;
+    await copyIndexToPath(indexPath, targetPath, pageTitle);
   }
 
   // Step 4: Fetch symbols and create perp route files
@@ -90,7 +136,11 @@ async function main() {
 
   for (const symbol of symbols) {
     const targetPath = path.join(buildDir, "perp", symbol, "index.html");
-    await copyIndexToPath(indexPath, targetPath);
+    const readableSymbol = symbol
+      .replace("PERP_", "")
+      .replace("_USDC", "/USDC");
+    const pageTitle = `${readableSymbol} | ${brokerName}`;
+    await copyIndexToPath(indexPath, targetPath, pageTitle);
   }
 
   // Step 5: Create 404.html for GitHub Pages fallback routing
