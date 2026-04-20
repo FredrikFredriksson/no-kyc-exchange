@@ -19,19 +19,23 @@ const STATIC_ROUTES = [
   "/points",
 ];
 
-function loadBrokerName(): string {
+function loadConfigValue(key: string, fallback: string): string {
   try {
     const configPath = path.join(__dirname, "public/config.js");
     const configText = readFileSync(configPath, "utf-8");
-    const jsonText = configText
-      .replace(/window\.__RUNTIME_CONFIG__\s*=\s*/, "")
-      .trim()
-      .replace(/;$/, "");
-    const config = JSON.parse(jsonText);
-    return config.VITE_ORDERLY_BROKER_NAME || "Orderly Network";
+    const match = configText.match(new RegExp(`${key}:\\s*["']([^"']+)["']`));
+    return match ? match[1] : fallback;
   } catch {
-    return "Orderly Network";
+    return fallback;
   }
+}
+
+function loadBrokerName(): string {
+  return loadConfigValue("VITE_ORDERLY_BROKER_NAME", "Orderly Network");
+}
+
+function loadSiteUrl(): string {
+  return loadConfigValue("VITE_SEO_SITE_URL", "");
 }
 
 const ROUTE_TITLES: Record<string, string> = {
@@ -76,12 +80,21 @@ async function copyIndexToPath(
   indexPath: string,
   targetPath: string,
   title?: string,
+  canonicalUrl?: string,
 ) {
   try {
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
-    if (title) {
+    if (title || canonicalUrl) {
       let html = await fs.readFile(indexPath, "utf-8");
-      html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+      if (title) {
+        html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+      }
+      if (canonicalUrl) {
+        html = html.replace(
+          /<link rel="canonical" href="[^"]*" \/>/,
+          `<link rel="canonical" href="${canonicalUrl}" />`,
+        );
+      }
       await fs.writeFile(targetPath, html);
     } else {
       await fs.copyFile(indexPath, targetPath);
@@ -121,12 +134,14 @@ async function main() {
 
   // Step 3: Create HTML files for static routes with unique titles
   const brokerName = loadBrokerName();
+  const siteUrl = loadSiteUrl();
   console.log(`\nCreating static route files (broker: ${brokerName})...`);
   for (const route of STATIC_ROUTES) {
     const targetPath = path.join(buildDir, route, "index.html");
     const routeLabel = ROUTE_TITLES[route];
     const pageTitle = routeLabel ? `${routeLabel} | ${brokerName}` : undefined;
-    await copyIndexToPath(indexPath, targetPath, pageTitle);
+    const canonicalUrl = siteUrl ? `${siteUrl}${route}` : undefined;
+    await copyIndexToPath(indexPath, targetPath, pageTitle, canonicalUrl);
   }
 
   // Step 4: Fetch symbols and create perp route files
@@ -140,7 +155,8 @@ async function main() {
       .replace("PERP_", "")
       .replace("_USDC", "/USDC");
     const pageTitle = `${readableSymbol} | ${brokerName}`;
-    await copyIndexToPath(indexPath, targetPath, pageTitle);
+    const canonicalUrl = siteUrl ? `${siteUrl}/perp/${symbol}` : undefined;
+    await copyIndexToPath(indexPath, targetPath, pageTitle, canonicalUrl);
   }
 
   // Step 5: Create 404.html for GitHub Pages fallback routing

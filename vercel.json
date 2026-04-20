@@ -1,4 +1,5 @@
 {
+  "buildCommand": "yarn build:spa",
   "outputDirectory": "build/client",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
