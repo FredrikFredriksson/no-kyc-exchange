@@ -54,6 +54,25 @@ const ROUTE_TITLES: Record<string, string> = {
   "/points": "Points",
 };
 
+const ROUTE_DESCRIPTIONS: Record<string, string> = {
+  "/perp":
+    "Trade perpetual futures on a no KYC crypto exchange with deep liquidity, low fees, and no signup required.",
+  "/markets":
+    "Browse all perpetual futures markets on our no KYC crypto exchange. Live prices, funding rates, and 24h volume.",
+  "/portfolio":
+    "Manage your positions, orders, and balances on a no KYC crypto exchange built for seamless perpetual trading.",
+  "/leaderboard":
+    "See top traders on our no KYC crypto exchange. Compete on PnL and ROI across perpetual futures markets.",
+  "/rewards":
+    "Earn trading rewards on a no KYC crypto exchange. Stake, trade, and unlock perks across perpetual futures markets.",
+  "/rewards/affiliate":
+    "Earn commission with the AI News Crypto affiliate program. Refer traders to our no KYC crypto exchange and get rewarded for every trade.",
+  "/swap":
+    "Swap tokens instantly on a no KYC crypto exchange. Fast, low-fee swaps across supported chains with no signup.",
+  "/points":
+    "Track your points on AI News Crypto, a no KYC crypto exchange rewarding active traders across perpetual futures markets.",
+};
+
 interface SymbolInfo {
   symbol: string;
 }
@@ -81,10 +100,11 @@ async function copyIndexToPath(
   targetPath: string,
   title?: string,
   canonicalUrl?: string,
+  description?: string,
 ) {
   try {
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
-    if (title || canonicalUrl) {
+    if (title || canonicalUrl || description) {
       let html = await fs.readFile(indexPath, "utf-8");
       if (title) {
         html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
@@ -93,6 +113,12 @@ async function copyIndexToPath(
         html = html.replace(
           /<link rel="canonical" href="[^"]*" \/>/,
           `<link rel="canonical" href="${canonicalUrl}" />`,
+        );
+      }
+      if (description) {
+        html = html.replace(
+          /<meta name="description" content="[^"]*" \/>/,
+          `<meta name="description" content="${description}" />`,
         );
       }
       await fs.writeFile(targetPath, html);
@@ -141,7 +167,14 @@ async function main() {
     const routeLabel = ROUTE_TITLES[route];
     const pageTitle = routeLabel ? `${routeLabel} | ${brokerName}` : undefined;
     const canonicalUrl = siteUrl ? `${siteUrl}${route}` : undefined;
-    await copyIndexToPath(indexPath, targetPath, pageTitle, canonicalUrl);
+    const description = ROUTE_DESCRIPTIONS[route];
+    await copyIndexToPath(
+      indexPath,
+      targetPath,
+      pageTitle,
+      canonicalUrl,
+      description,
+    );
   }
 
   // Step 4: Fetch symbols and create perp route files
@@ -156,7 +189,14 @@ async function main() {
       .replace("_USDC", "/USDC");
     const pageTitle = `${readableSymbol} | ${brokerName}`;
     const canonicalUrl = siteUrl ? `${siteUrl}/perp/${symbol}` : undefined;
-    await copyIndexToPath(indexPath, targetPath, pageTitle, canonicalUrl);
+    const description = `Trade ${readableSymbol} perpetual futures on a no KYC crypto exchange. Deep liquidity, low fees, and no signup required.`;
+    await copyIndexToPath(
+      indexPath,
+      targetPath,
+      pageTitle,
+      canonicalUrl,
+      description,
+    );
   }
 
   // Step 5: Create 404.html for GitHub Pages fallback routing
