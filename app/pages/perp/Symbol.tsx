@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { API } from "@orderly.network/types";
 import { TradingPage } from "@orderly.network/trading";
-import { updateSymbol } from "@/utils/storage";
-import { formatSymbol, generatePageTitle } from "@/utils/utils";
+import { API } from "@orderly.network/types";
 import { useOrderlyConfig } from "@/utils/config";
 import { getPageMeta } from "@/utils/seo";
 import { renderSEOTags } from "@/utils/seo-tags";
+import { updateSymbol } from "@/utils/storage";
+import { formatSymbol, generatePageTitle } from "@/utils/utils";
+import { AiSignalsFeed } from "@/widgets/ai-signals/AiSignalsFeed";
 
 export default function PerpSymbol() {
   const params = useParams();
@@ -19,6 +20,12 @@ export default function PerpSymbol() {
     updateSymbol(symbol);
   }, [symbol]);
 
+  useEffect(() => {
+    if (params.symbol && params.symbol !== symbol) {
+      setSymbol(params.symbol);
+    }
+  }, [params.symbol, symbol]);
+
   const onSymbolChange = useCallback(
     (data: API.Symbol) => {
       const symbol = data.symbol;
@@ -29,7 +36,7 @@ export default function PerpSymbol() {
 
       navigate(`/perp/${symbol}${queryString}`);
     },
-    [navigate, searchParams]
+    [navigate, searchParams],
   );
 
   const pageMeta = getPageMeta();
@@ -38,6 +45,7 @@ export default function PerpSymbol() {
   return (
     <div className="h-full">
       {renderSEOTags(pageMeta, pageTitle)}
+      <AiSignalsFeed />
       <TradingPage
         symbol={symbol}
         onSymbolChange={onSymbolChange}
