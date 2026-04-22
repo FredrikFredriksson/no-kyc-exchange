@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 const SIDEBAR_SELECTOR = ".oui-trading-markets-container";
 
 /**
- * Finds Orderly's left sidebar container once, then prepends a stable host
- * <div> so the widget renders as its first child — above the native markets
+ * Finds Orderly's left sidebar container once, then appends a stable host
+ * <div> so the widget renders as its last child — below the native markets
  * list. We intentionally avoid a MutationObserver: TradingPage mutates the DOM
  * on every tick, and any widget-triggered re-render of the surrounding tree
  * can crash Orderly's components (e.g. OrderTypeSelect has a conditional
@@ -23,7 +23,7 @@ export function useSidebarHost(): HTMLDivElement | null {
       if (cancelled) return;
       const sidebar = document.querySelector(SIDEBAR_SELECTOR);
       if (sidebar) {
-        sidebar.prepend(div);
+        sidebar.appendChild(div);
         setHost(div);
         return;
       }

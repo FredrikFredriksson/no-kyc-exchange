@@ -1,3 +1,18 @@
+.oui-trading-markets-container:has(> [data-widget="ai-signals"]) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+.oui-trading-markets-container > #oui-side-markets {
+  max-height: 500px;
+  flex: 0 0 auto;
+  height: auto;
+}
+.oui-trading-markets-container > [data-widget="ai-signals"] {
+  flex: 0 0 auto;
+}
+
 .ai-signals-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(252, 211, 77, 0.35) transparent;
