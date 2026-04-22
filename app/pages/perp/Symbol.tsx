@@ -7,7 +7,6 @@ import { getPageMeta } from "@/utils/seo";
 import { renderSEOTags } from "@/utils/seo-tags";
 import { updateSymbol } from "@/utils/storage";
 import { formatSymbol, generatePageTitle } from "@/utils/utils";
-import { AiSignalsFeed } from "@/widgets/ai-signals/AiSignalsFeed";
 
 export default function PerpSymbol() {
   const params = useParams();
@@ -45,7 +44,6 @@ export default function PerpSymbol() {
   return (
     <div className="h-full">
       {renderSEOTags(pageMeta, pageTitle)}
-      <AiSignalsFeed />
       <TradingPage
         symbol={symbol}
         onSymbolChange={onSymbolChange}
