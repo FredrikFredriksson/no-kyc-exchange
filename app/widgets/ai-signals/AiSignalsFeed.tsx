@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Info } from "lucide-react";
 import { cn } from "@orderly.network/ui";
 import type { CommentaryMap, Signal, SignalVerdict } from "./types";
-import { usePolledFetch } from "./usePolledFetch";
+import { prewarm, usePolledFetch } from "./usePolledFetch";
 import { useSidebarHost } from "./useSidebarHost";
 import "./scrollbar.css";
 
@@ -21,6 +21,9 @@ const API_BASE =
 const SIGNALS_URL = `${API_BASE}/api/signals`;
 const COMMENTARY_URL = `${API_BASE}/api/signals/commentary`;
 const AINEWSCRYPTO_ORIGIN = "https://www.ainewscrypto.com";
+
+prewarm(SIGNALS_URL);
+prewarm(COMMENTARY_URL);
 
 function perpPairFor(symbol: string): string {
   return `PERP_${symbol.toUpperCase()}_USDC`;
